@@ -16,5 +16,4 @@ class Sale extends Model
     public function SaleItems(){
         return $this->hasMany("App\Models\SaleItems", "id", "sale_id");
     }
-
 }
