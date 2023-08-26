@@ -13,4 +13,8 @@ class Sale extends Model
     const CREATED_AT = "created";
     const UPDATED_AT = null;
 
+    public function SaleItems(){
+        return $this->hasMany("App\Models\SaleItems", "id", "sale_id");
+    }
+
 }
