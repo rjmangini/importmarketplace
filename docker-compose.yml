@@ -21,13 +21,9 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
-            - odontosig
 networks:
     sail:
         driver: bridge
-    odontosig:
-        name: odontosig
-        external: true
 volumes:
     sail-mysql:
         driver: local
