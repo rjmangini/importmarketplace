@@ -18,12 +18,13 @@ class GoogleImportItems implements ToModel, WithHeadingRow
         $id = $this->getTransactionKey($row['id']);
         $ebook = ImportHelpers::getEbookbyISBN($row['primary_isbn']);
         $sale = ImportHelpers::getSalebyTransactionKey($id);
+        $currency = ImportHelpers::getCurrency($row['list_price_currency']);
 
-        if ($sale && $ebook) {
+        if (!empty($sale) && !empty($ebook)) {
             $dataItem = [
                 "sale_id" => $sale->id,
-                "ebook_id" => $ebook->id,
-                "currency_id" => ImportHelpers::getCurrency($row['list_price_currency'])->id,
+                "ebook_id" => $ebook->ebook_id,
+                "currency_id" => (isset($currency->id) ? $currency->id : 1),
                 "price" => 0,
                 "bm_fee" => 0,
                 "store_fee" => 0,
