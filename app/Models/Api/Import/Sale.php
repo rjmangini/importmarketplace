@@ -13,4 +13,18 @@ class Sale extends Model
     const CREATED_AT = "created";
     const UPDATED_AT = null;
 
+    protected $fillable = [
+        "store_id",
+        "transaction_key",
+        "date",
+        "customer_identification_number",
+        "customer_fullname",
+        "customer_email",
+        "customer_gender",
+        "customer_birthday",
+        "customer_zipcode",
+        "customer_country",
+        "customer_state",
+        "created",
+    ];
 }
