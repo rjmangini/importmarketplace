@@ -10,11 +10,31 @@ class SaleItems extends Model
     use HasFactory;
 
     protected $table = "sale_items";
-    const CREATED_AT = "created";
+    const CREATED_AT = null;
     const UPDATED_AT = null;
 
-    public function Sale(){
-        return $this->hasOne("App\MOdels\Sale", "id", "sale_id");
+    protected $fillable = [
+        "sale_id",
+        "ebook_id",
+        "currency_id",
+        "price",
+        "bm_fee",
+        "store_fee",
+        "tax_fee",
+        "list_price",
+        "retail_price",
+        "tax",
+        "bm_remuneration",
+        "author_remuneration",
+        "imprint_remuneration",
+        "reversed",
+        "payment_id",
+        "original_price",
+    ];
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class, "id", "sale_id");
     }
 
 }

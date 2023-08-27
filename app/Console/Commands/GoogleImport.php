@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Http\Controllers\Imports\GoogleImportController;
+use App\Http\Controllers\Imports\GoogleImportItensController;
 use Carbon\Carbon;
 
 class GoogleImport extends Command
@@ -27,9 +28,14 @@ class GoogleImport extends Command
      */
     public function handle()
     {
-        $this->line(Carbon::now());
-        $import = new GoogleImportController;
-        $import->import();
-        $this->line(Carbon::now());
+        $this->line("Importando Vendas - " . Carbon::now());
+        $importSales = new GoogleImportController;
+        $importSales->import();
+
+        $this->line("Importando Itens - " . Carbon::now());
+        $importSales = new GoogleImportItensController;
+        $importSales->import();
+
+        $this->line("Importando Finalizada - " . Carbon::now());
     }
 }

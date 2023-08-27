@@ -7,72 +7,57 @@ namespace App\Imports;
 use App\Models\Api\Import\Sale;
 use App\Models\Api\Import\SaleItems;
 use Carbon\Carbon;
+use Exception;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
+// use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+// use Maatwebsite\Excel\Concerns\WithUpsertColumns;
+use Maatwebsite\Excel\Concerns\WithUpserts;
 
-class GoogleImport implements ToModel, WithHeadingRow
+class GoogleImport implements ToModel, WithHeadingRow, WithUpserts
 {
     use Importable;
 
     public function model(array $row)
     {
         $customer = [
-            'id' => null,
+            'id' => 0,
             'fullname' => '',
             'email' => '',
             'gender' => '',
-            'birthday' => '0000-00-00',
+            'birthday' => '1900-01-01',
             'zipcode' => '',
             'country' => 'BR',
             'state' => '',
         ];
+        try {
+            $date = Carbon::createFromFormat('d/m/Y', $row['transaction_date'])->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            $date = null;
+        }
 
-        $ebook = ImportHelpers::getEbookbyISBN($row['primary_isbn']);
+        $dataSale = [
+            "store_id" => ImportConstants::GOOGLE_ID,
+            "transaction_key" => $this->getTransactionKey($row['id']),
+            "date" => $date,
+            "customer_identification_number" => $customer['id'],
+            "customer_fullname" => $customer['fullname'],
+            "customer_email" => $customer['email'],
+            "customer_gender" => $customer['gender'],
+            "customer_birthday" => $customer['birthday'],
+            "customer_zipcode" => $customer['zipcode'],
+            "customer_country" => $customer['country'],
+            "customer_state" => $customer['state'],
+            "created" => Carbon::now()->format('Y-m-d H:i:s'),
+        ];
 
-        if (ImportHelpers::saleAlreadyExists($this->getTransactionKey($row['id']))) {
-            return [
-                'status' => false,
-                'message' => "A Venda GOOGLE_{$this->getTransactionKey($row['id'])} já está no sistema no sistema!"
-            ];    
-        } else {
-            $sale = new Sale([
-                "store_id" => ImportConstants::GOOGLE_ID,
-                "transaction_key" => $this->getTransactionKey($row['id']),
-                "date" => Carbon::createFromFormat('d/m/Y', $row['transaction_date'])->format('Y-m-d H:i:s'),
-                "customer_identification_number" => $customer['id'],
-                "customer_fullname" => $customer['fullname'],
-                "customer_email" => $customer['email'],
-                "customer_gender" => $customer['gender'],
-                "customer_birthday" => $customer['birthday'],
-                "customer_zipcode" => $customer['zipcode'],
-                "customer_country" => $customer['country'],
-                "customer_state" => $customer['state'],
-                "created" => Carbon::now()->format('Y-m-d H:i:s'),
-            ]);
+        return new Sale($dataSale);
+    }
 
-            $saleItem = new SaleItems([
-                "sale_id" => $sale->id, 
-                "ebook_id" => ImportHelpers::getEbookbyISBN($row['isbn_primary']),
-                "currency_id" => ImportHelpers::getCurrency($row['list_price_currency'])->id,
-                "price" => $row[list_price_tax_inclusive],
-                "bm_fee" => 0,
-                "store_fee" => 0,
-                "tax_fee" => 0,
-                "list_price" => 0,
-                "retail_price" => 0,
-                "tax" => 0,
-                "bm_remuneration" => 0,
-                "author_remuneration" => 0,
-                "imprint_remuneration" => 0,
-                "reversed" => 0,
-                "payment_id" => 0,
-                "original_price" => 0,
-            ]);
-        }    
-
-        return $sale && $saleItem;
+    public function uniqueBy()
+    {
+        return ['store_id', 'transaction_key'];
     }
 
     public function getCsvSettings(): array

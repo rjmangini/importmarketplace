@@ -27,8 +27,9 @@ class Sale extends Model
         "customer_state",
         "created",
     ];
-    public function SaleItems()
+
+    public function saleItem()
     {
-        return $this->hasMany("App\Models\SaleItems", "id", "sale_id");
+        return $this->hasMany(SaleItems::class, "id", "sale_id");
     }
 }
