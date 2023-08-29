@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class ImportHelpers
 {
-    
+
     public static function getEbookbyISBN(string $isbn)
     {
         return DB::table('ebook_file')
@@ -41,6 +41,41 @@ class ImportHelpers
     {
         return DB::table('sale')
             ->where('transaction_key', $saleId)
+            ->first();
+    }
+
+    public static function getBmFee(string $ebookId)
+    {
+        return DB::table('distribution_distribution')
+            ->where('id', $ebookId)
+            ->first();
+    }
+
+    public static function getTaxFee(string $ebookId)
+    {
+        return DB::table('distribution_distribution')
+            ->where('id', $ebookId)
+            ->first();
+    }
+
+    public static function getStoreFee(string $ebookId)
+    {
+        return DB::table('distribution_distribution')
+            ->where('id', $ebookId)
+            ->first();
+    }
+
+    public static function getListPrice(string $ebookId)
+    {
+        return DB::table('distribution_distribution')
+            ->where('id', $ebookId)
+            ->first();
+    }
+
+    public static function getRetailPrice(string $ebookId)
+    {
+        return DB::table('distribution_distribution')
+            ->where('id', $ebookId)
             ->first();
     }
 

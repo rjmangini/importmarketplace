@@ -35,7 +35,7 @@ class GoogleImport implements ToModel, WithHeadingRow, WithUpserts
             $date = Carbon::createFromFormat('d/m/Y', $row['transaction_date'])->format('Y-m-d H:i:s');
         } catch (Exception $e) {
             throw new $e;
-            $date = Carbon::now()->format('Y-m-d H:i:s');
+         //   $date = Carbon::now()->format('Y-m-d H:i:s');
         }
 
         $dataSale = [
@@ -68,7 +68,7 @@ class GoogleImport implements ToModel, WithHeadingRow, WithUpserts
             'delimiter' => "\t"
         ];
     }
- 
+
     // public function batchSize(): int
     // {
     //     return 1000;
