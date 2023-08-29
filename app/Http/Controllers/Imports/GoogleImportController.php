@@ -10,7 +10,7 @@ class GoogleImportController extends Controller
 
     public function import()
     {
-        (new GoogleImport)->import(storage_path('app/public/import/google/1teste.csv'), null, \Maatwebsite\Excel\Excel::CSV);
+        (new GoogleImport)->import(storage_path('app/public/import/google/teste.csv'), null, \Maatwebsite\Excel\Excel::CSV);
     }
 
 }

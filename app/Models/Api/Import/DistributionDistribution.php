@@ -26,6 +26,7 @@ class DistributionDistribution extends Model
         "activated",
         "modified",
         "disabled",
-        "disabled_by_store"  ];
+        "disabled_by_store"
+    ];
 
 }

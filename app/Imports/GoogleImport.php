@@ -10,12 +10,12 @@ use Carbon\Carbon;
 use Exception;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
-// use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-// use Maatwebsite\Excel\Concerns\WithUpsertColumns;
 use Maatwebsite\Excel\Concerns\WithUpserts;
 
-class GoogleImport implements ToModel, WithHeadingRow, WithUpserts
+class GoogleImport implements ToModel, WithHeadingRow, WithUpserts, WithChunkReading, WithBatchInserts
 {
     use Importable;
 
@@ -31,12 +31,7 @@ class GoogleImport implements ToModel, WithHeadingRow, WithUpserts
             'country' => 'BR',
             'state' => '',
         ];
-        try {
-            $date = Carbon::createFromFormat('d/m/Y', $row['transaction_date'])->format('Y-m-d H:i:s');
-        } catch (Exception $e) {
-            throw new $e;
-         //   $date = Carbon::now()->format('Y-m-d H:i:s');
-        }
+        $date = Carbon::createFromFormat('d/m/Y', $row['transaction_date'])->format('Y-m-d H:i:s');
 
         $dataSale = [
             "store_id" => ImportConstants::GOOGLE_ID,
@@ -65,14 +60,20 @@ class GoogleImport implements ToModel, WithHeadingRow, WithUpserts
     {
         // comma <,> semicolon <;> tab <\t> space < > pipe <|>
         return [
+            'input_encoding' => 'UTF-8',
             'delimiter' => "\t"
         ];
     }
 
-    // public function batchSize(): int
-    // {
-    //     return 1000;
-    // }
+    public function batchSize(): int
+    {
+        return 5000;
+    }
+
+    public function chunkSize(): int
+    {
+        return 5000;
+    }
 
     private function getTransactionKey($id)
     {
