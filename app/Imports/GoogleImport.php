@@ -2,12 +2,10 @@
 
 namespace App\Imports;
 
-// use app\Imports\ImportConstants;
-
 use App\Models\Api\Import\Sale;
-use App\Models\Api\Import\SaleItems;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
@@ -21,34 +19,44 @@ class GoogleImport implements ToModel, WithHeadingRow, WithUpserts, WithChunkRea
 
     public function model(array $row)
     {
-        $customer = [
-            'id' => 0,
-            'fullname' => '',
-            'email' => '',
-            'gender' => '',
-            'birthday' => '1900-01-01',
-            'zipcode' => '',
-            'country' => 'BR',
-            'state' => '',
-        ];
-        $date = Carbon::createFromFormat('d/m/Y', $row['transaction_date'])->format('Y-m-d H:i:s');
+        try {
+            $today = Carbon::now()->format('Y-m-d');
+            $log = Log::build([
+                'driver' => 'single',
+                'path' => storage_path("logs/imports/google/{$today}.log"),
+            ]);
 
-        $dataSale = [
-            "store_id" => ImportConstants::GOOGLE_ID,
-            "transaction_key" => $this->getTransactionKey($row['id']),
-            "date" => $date,
-            "customer_identification_number" => $customer['id'],
-            "customer_fullname" => $customer['fullname'],
-            "customer_email" => $customer['email'],
-            "customer_gender" => $customer['gender'],
-            "customer_birthday" => $customer['birthday'],
-            "customer_zipcode" => $customer['zipcode'],
-            "customer_country" => $customer['country'],
-            "customer_state" => $customer['state'],
-            "created" => Carbon::now()->format('Y-m-d H:i:s'),
-        ];
-
-        return new Sale($dataSale);
+            $customer = [
+                'id' => 0,
+                'fullname' => '',
+                'email' => '',
+                'gender' => '',
+                'birthday' => '1900-01-01',
+                'zipcode' => '',
+                'country' => 'BR',
+                'state' => '',
+            ];
+            $date = Carbon::createFromFormat('d/m/Y', $row['transaction_date'])->format('Y-m-d H:i:s');
+    
+            $dataSale = [
+                "store_id" => ImportConstants::GOOGLE_ID,
+                "transaction_key" => $this->getTransactionKey($row['id']),
+                "date" => $date,
+                "customer_identification_number" => $customer['id'],
+                "customer_fullname" => $customer['fullname'],
+                "customer_email" => $customer['email'],
+                "customer_gender" => $customer['gender'],
+                "customer_birthday" => $customer['birthday'],
+                "customer_zipcode" => $customer['zipcode'],
+                "customer_country" => $customer['country'],
+                "customer_state" => $customer['state'],
+                "created" => Carbon::now()->format('Y-m-d H:i:s'),
+            ];
+    
+            return new Sale($dataSale);
+        } catch (Exception $e) {
+            $log->error("Message: {$e->getMessage()} - File: {$e->getFile()} - Line: {$e->getFile()}");
+        }        
     }
 
     public function uniqueBy()

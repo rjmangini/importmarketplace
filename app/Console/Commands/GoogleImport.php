@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Http\Controllers\Imports\GoogleImportController;
 use App\Http\Controllers\Imports\GoogleImportItensController;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class GoogleImport extends Command
 {
@@ -28,14 +29,22 @@ class GoogleImport extends Command
      */
     public function handle()
     {
-        $this->line("Importando Vendas - " . Carbon::now());
+        $today = Carbon::now()->format('Y-m-d');
+        $log = Log::build([
+            'driver' => 'single',
+            'path' => storage_path("logs/imports/google/{$today}.log"),
+        ]);
+
+        $log->info("------------------------------------------- Iniciando importação GOOGLE - " . Carbon::now());
+
+        $log->info("Importando SALE - " . Carbon::now());
         $importSales = new GoogleImportController;
         $importSales->import();
 
-        $this->line("Importando Itens - " . Carbon::now());
-        $importSales = new GoogleImportItensController;
-        $importSales->import();
+        $log->info("Importando SALE_ITEMS - " . Carbon::now());
+        $importItems = new GoogleImportItensController;
+        $importItems->import();
 
-        $this->line("Importando Finalizada - " . Carbon::now());
+        $log->info("------------------------------------------- Importando Finalizada - " . Carbon::now());
     }
 }
