@@ -35,7 +35,7 @@ class GoogleImport extends Command
             'path' => storage_path("logs/imports/google/{$today}.log"),
         ]);
 
-        $log->info("------------------------------------------- Iniciando importação GOOGLE - " . Carbon::now());
+        $log->info("------------------------------------------- Importação Iniciada - " . Carbon::now());
 
         $log->info("Importando SALE - " . Carbon::now());
         $importSales = new GoogleImportController;
@@ -45,6 +45,6 @@ class GoogleImport extends Command
         $importItems = new GoogleImportItensController;
         $importItems->import();
 
-        $log->info("------------------------------------------- Importando Finalizada - " . Carbon::now());
+        $log->info("------------------------------------------- Importação Finalizada - " . Carbon::now());
     }
 }
